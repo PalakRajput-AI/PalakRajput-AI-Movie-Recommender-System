@@ -13,7 +13,7 @@ SIMILARITY_FILE = "similarity.pkl"
 # Load initial data
 # Load initial data
 movies = pd.read_csv(MOVIE_FILE)
-
+print(movies.columns)
 if os.path.exists(SIMILARITY_FILE):
     similarity = pickle.load(open(SIMILARITY_FILE, "rb"))
 else:
@@ -36,7 +36,7 @@ else:
 
     with open(SIMILARITY_FILE, "wb") as file:
         pickle.dump(similarity, file)
-        
+
 @app.route("/")
 def home():
     images = [(img, os.path.splitext(img)[0]) for img in os.listdir(IMAGE_FOLDER) if img.endswith((".jpg", ".png", ".jpeg"))]
