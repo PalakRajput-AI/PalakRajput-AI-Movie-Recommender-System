@@ -17,24 +17,16 @@ print(movies.columns)
 if os.path.exists(SIMILARITY_FILE):
     similarity = pickle.load(open(SIMILARITY_FILE, "rb"))
 else:
-    movies.fillna("", inplace=True)
-
-    movies["combined_features"] = (
-        movies["overview"] + " " +
-        movies["genres"] + " " +
-        movies["keywords"] + " " +
-        movies["cast"] + " " +
-        movies["crew"]
-    )
-
-    vectorizer = TfidfVectorizer(stop_words="english")
-    feature_matrix = vectorizer.fit_transform(
+   movies.fillna("",inplace=True)
+   movies["combined_features"] = movies["tags"]
+vectorizer = TfidfVectorizer(stop_words="english")
+feature_matrix = vectorizer.fit_transform(
         movies["combined_features"]
     ).toarray()
 
-    similarity = cosine_similarity(feature_matrix)
+similarity = cosine_similarity(feature_matrix)
 
-    with open(SIMILARITY_FILE, "wb") as file:
+with open(SIMILARITY_FILE, "wb") as file:
         pickle.dump(similarity, file)
 
 @app.route("/")
