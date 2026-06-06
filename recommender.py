@@ -11,9 +11,32 @@ MOVIE_FILE = "Cleaned_Movies.csv"
 SIMILARITY_FILE = "similarity.pkl"
 
 # Load initial data
+# Load initial data
 movies = pd.read_csv(MOVIE_FILE)
-similarity = pickle.load(open(SIMILARITY_FILE, "rb"))
 
+if os.path.exists(SIMILARITY_FILE):
+    similarity = pickle.load(open(SIMILARITY_FILE, "rb"))
+else:
+    movies.fillna("", inplace=True)
+
+    movies["combined_features"] = (
+        movies["overview"] + " " +
+        movies["genres"] + " " +
+        movies["keywords"] + " " +
+        movies["cast"] + " " +
+        movies["crew"]
+    )
+
+    vectorizer = TfidfVectorizer(stop_words="english")
+    feature_matrix = vectorizer.fit_transform(
+        movies["combined_features"]
+    ).toarray()
+
+    similarity = cosine_similarity(feature_matrix)
+
+    with open(SIMILARITY_FILE, "wb") as file:
+        pickle.dump(similarity, file)
+        
 @app.route("/")
 def home():
     images = [(img, os.path.splitext(img)[0]) for img in os.listdir(IMAGE_FOLDER) if img.endswith((".jpg", ".png", ".jpeg"))]
